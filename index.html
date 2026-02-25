@@ -803,6 +803,21 @@ let currentFilter = "all";
 // Load from storage
 // === Cargar reportes desde Google Sheets (via Apps Script) ===
 async function loadReports() {
+// === Guardar un reporte en Google Sheets ===
+async function saveReportToServer(report) {
+  try {
+    const res = await fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // evita preflight CORS
+      body: JSON.stringify({ action: 'append', report })
+    });
+    const json = await res.json();
+    return json?.ok === true;
+  } catch (e) {
+    console.error('saveReportToServer error', e);
+    return false;
+  }
+}
   try {
     const res = await fetch(`${API_URL}?action=list`, { cache: 'no-store' });
     const json = await res.json();
@@ -978,8 +993,15 @@ document.getElementById('reportForm').addEventListener('submit', async function(
     ts: new Date().toISOString()
   };
 
-  reports.unshift(report);
-  await saveReports();
+  // Enviar a Google Sheets
+const ok = await saveReportToServer(report);
+if (!ok) {
+  alert('No se pudo enviar el reporte. Revisa tu conexión e intenta de nuevo.');
+  return;
+}
+// Traer de vuelta lo más reciente desde la Sheet y refrescar dashboard
+await loadReports();
+renderDashboard();
 
   // Reset completo - volver al inicio
   this.reset();
