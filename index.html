@@ -966,14 +966,25 @@ document.getElementById('reportForm').addEventListener('submit', async function(
   reports.unshift(report);
   await saveReports();
 
-  // Reset
+  // Reset completo - volver al inicio
   this.reset();
   setTodayDate();
   photoDataURLs = [];
   selectedTagVal = '';
+  selectedPromoter = null;
   document.querySelectorAll('.tag').forEach(t => t.className = 'tag');
   renderPhotoPreview();
   document.getElementById('photoCounter').style.display = 'none';
+
+  // Ocultar formulario y deseleccionar promotor
+  document.getElementById('reportForm').style.display = 'none';
+  document.querySelectorAll('.promoter-card').forEach(c => c.classList.remove('selected'));
+  document.getElementById('currentAvatar').textContent = '?';
+  document.getElementById('currentAvatar').style.background = 'linear-gradient(135deg, var(--accent), var(--accent2))';
+  document.getElementById('currentName').textContent = 'Elige promotor';
+
+  // Scroll al inicio
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 
   // Toast
   const toast = document.getElementById('toast');
@@ -1105,7 +1116,7 @@ function exportCSV() {
 // =====================
 // PIN LOCK
 // =====================
-const SUPERVISOR_PIN = "2498"; // 👈 CAMBIA ESTE PIN
+const SUPERVISOR_PIN = "1234"; // 👈 CAMBIA ESTE PIN
 let pinEntered = "";
 let pinUnlocked = false;
 
