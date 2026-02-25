@@ -1,0 +1,1043 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PromoTrack – Hallazgos en Tienda</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0f1e;
+    --surface: #111827;
+    --surface2: #1a2235;
+    --border: #1f3058;
+    --accent: #3b82f6;
+    --accent2: #06b6d4;
+    --success: #10b981;
+    --warning: #f59e0b;
+    --danger: #ef4444;
+    --text: #e2e8f0;
+    --text2: #94a3b8;
+    --text3: #475569;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* BG mesh */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 40% at 20% 10%, rgba(59,130,246,0.12) 0%, transparent 70%),
+      radial-gradient(ellipse 50% 30% at 80% 80%, rgba(6,182,212,0.08) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .app { position: relative; z-index: 1; }
+
+  /* ===== TOP NAV ===== */
+  nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 24px;
+    height: 60px;
+    background: rgba(17,24,39,0.85);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .nav-logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1.2rem;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: -0.5px;
+  }
+  .nav-tabs {
+    display: flex;
+    gap: 4px;
+    background: var(--surface2);
+    padding: 4px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+  }
+  .nav-tab {
+    padding: 6px 16px;
+    border-radius: 7px;
+    border: none;
+    background: transparent;
+    color: var(--text2);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .nav-tab.active {
+    background: var(--accent);
+    color: #fff;
+  }
+  .nav-user {
+    font-size: 0.8rem;
+    color: var(--text2);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .avatar {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: white;
+  }
+
+  /* ===== PAGES ===== */
+  .page { display: none; padding: 28px 24px; max-width: 900px; margin: 0 auto; }
+  .page.active { display: block; }
+
+  /* ===== SECTION TITLES ===== */
+  .section-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+  .section-sub {
+    color: var(--text2);
+    font-size: 0.9rem;
+    margin-bottom: 24px;
+  }
+
+  /* ===== PROMOTER SELECTOR ===== */
+  .promoter-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 12px;
+    margin-bottom: 28px;
+  }
+  .promoter-card {
+    background: var(--surface);
+    border: 2px solid var(--border);
+    border-radius: 14px;
+    padding: 16px 12px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .promoter-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+  .promoter-card.selected { border-color: var(--accent); background: rgba(59,130,246,0.1); }
+  .promoter-card .p-avatar {
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    margin: 0 auto 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1rem;
+    color: white;
+  }
+  .promoter-card .p-name { font-weight: 600; font-size: 0.85rem; }
+  .promoter-card .p-zone { color: var(--text2); font-size: 0.75rem; margin-top: 2px; }
+
+  /* ===== FORM ===== */
+  .form-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 24px;
+    margin-bottom: 20px;
+  }
+  .form-card h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 18px;
+    color: var(--text2);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 0.75rem;
+  }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .form-group { margin-bottom: 16px; }
+  .form-group label {
+    display: block;
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--text2);
+    margin-bottom: 8px;
+  }
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 11px 14px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    outline: none;
+    transition: border-color 0.2s;
+    -webkit-appearance: none;
+  }
+  .form-group input:focus,
+  .form-group select:focus,
+  .form-group textarea:focus { border-color: var(--accent); }
+  .form-group textarea { resize: vertical; min-height: 90px; }
+  .form-group select option { background: var(--surface2); }
+
+  /* Stock fields */
+  .stock-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+  .stock-item {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px;
+    text-align: center;
+  }
+  .stock-item label {
+    font-size: 0.75rem;
+    color: var(--text2);
+    margin-bottom: 8px;
+    display: block;
+  }
+  .stock-item input {
+    background: transparent !important;
+    border: none !important;
+    border-bottom: 2px solid var(--border) !important;
+    border-radius: 0 !important;
+    text-align: center;
+    font-size: 1.4rem;
+    font-weight: 700;
+    font-family: 'Syne', sans-serif !important;
+    color: var(--accent) !important;
+    padding: 4px !important;
+  }
+  .stock-item input:focus { border-bottom-color: var(--accent) !important; outline: none; }
+
+  /* Photo upload */
+  .photo-zone {
+    border: 2px dashed var(--border);
+    border-radius: 14px;
+    padding: 32px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: var(--surface2);
+    position: relative;
+  }
+  .photo-zone:hover { border-color: var(--accent); background: rgba(59,130,246,0.05); }
+  .photo-zone.full { border-color: var(--text3); opacity: 0.5; pointer-events: none; cursor: not-allowed; }
+  .photo-zone input[type=file] {
+    position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
+  }
+  .photo-zone .icon { font-size: 2.5rem; margin-bottom: 10px; }
+  .photo-zone p { color: var(--text2); font-size: 0.9rem; }
+  .photo-zone span { color: var(--accent); font-weight: 600; }
+
+  .photo-counter {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 14px;
+    margin-bottom: 10px;
+  }
+  .photo-counter-label { font-size: 0.8rem; color: var(--text2); }
+  .photo-slots {
+    display: flex;
+    gap: 6px;
+  }
+  .photo-slot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: var(--border);
+    transition: background 0.2s;
+  }
+  .photo-slot.filled { background: var(--accent); }
+
+  .photos-preview {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
+    margin-top: 6px;
+  }
+  .photo-thumb-wrap {
+    position: relative;
+  }
+  .photo-thumb {
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: cover;
+    border-radius: 10px;
+    border: 2px solid var(--border);
+    display: block;
+  }
+  .photo-remove {
+    position: absolute;
+    top: -6px; right: -6px;
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    background: var(--danger);
+    border: 2px solid var(--bg);
+    color: white;
+    font-size: 0.7rem;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  /* Status tags */
+  .tag-row { display: flex; flex-wrap: wrap; gap: 10px; }
+  .tag {
+    padding: 6px 14px;
+    border-radius: 100px;
+    border: 1.5px solid var(--border);
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: transparent;
+    color: var(--text2);
+  }
+  .tag.sel-verde { border-color: var(--success); background: rgba(16,185,129,0.15); color: var(--success); }
+  .tag.sel-amarillo { border-color: var(--warning); background: rgba(245,158,11,0.15); color: var(--warning); }
+  .tag.sel-rojo { border-color: var(--danger); background: rgba(239,68,68,0.15); color: var(--danger); }
+
+  /* Submit button */
+  .btn-submit {
+    width: 100%;
+    padding: 15px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border: none;
+    border-radius: 12px;
+    color: white;
+    font-family: 'Syne', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.5px;
+    margin-top: 8px;
+  }
+  .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(59,130,246,0.35); }
+  .btn-submit:active { transform: translateY(0); }
+
+  /* ===== SUCCESS TOAST ===== */
+  .toast {
+    position: fixed;
+    bottom: 28px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: var(--success);
+    color: white;
+    padding: 14px 28px;
+    border-radius: 100px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    z-index: 999;
+    white-space: nowrap;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* ===== DASHBOARD ===== */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    margin-bottom: 24px;
+  }
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px;
+    text-align: center;
+  }
+  .stat-card .s-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 2rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .stat-card .s-label { color: var(--text2); font-size: 0.8rem; margin-top: 4px; }
+
+  /* Filter bar */
+  .filter-bar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+  .filter-btn {
+    padding: 7px 16px;
+    border-radius: 100px;
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    color: var(--text2);
+    font-size: 0.82rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .filter-btn.active { border-color: var(--accent); color: var(--accent); background: rgba(59,130,246,0.1); }
+  .filter-btn:hover { border-color: var(--accent); }
+
+  /* Report cards */
+  .report-list { display: flex; flex-direction: column; gap: 14px; }
+  .report-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+  .report-card:hover { border-color: var(--accent); }
+  .report-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    cursor: pointer;
+    gap: 12px;
+  }
+  .report-card-header .left { display: flex; align-items: center; gap: 12px; }
+  .report-avatar {
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800;
+    font-size: 0.85rem;
+    font-family: 'Syne', sans-serif;
+    color: white;
+    flex-shrink: 0;
+  }
+  .report-info .r-name { font-weight: 600; font-size: 0.92rem; }
+  .report-info .r-meta { color: var(--text2); font-size: 0.78rem; margin-top: 2px; }
+  .report-status {
+    padding: 4px 12px;
+    border-radius: 100px;
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+  .s-ok { background: rgba(16,185,129,0.15); color: var(--success); }
+  .s-warn { background: rgba(245,158,11,0.15); color: var(--warning); }
+  .s-bad { background: rgba(239,68,68,0.15); color: var(--danger); }
+
+  .report-card-body {
+    display: none;
+    padding: 0 20px 20px;
+    border-top: 1px solid var(--border);
+  }
+  .report-card-body.open { display: block; }
+  .report-body-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 16px; }
+  .detail-block label { color: var(--text2); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 6px; }
+  .detail-block p { font-size: 0.9rem; line-height: 1.5; }
+  .stock-display { display: flex; gap: 14px; flex-wrap: wrap; }
+  .stock-pill {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 14px;
+    font-size: 0.85rem;
+  }
+  .stock-pill span { color: var(--accent); font-weight: 700; font-family: 'Syne', sans-serif; }
+  .report-photos {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 16px;
+  }
+  .report-photo {
+    width: 80px; height: 80px;
+    object-fit: cover;
+    border-radius: 10px;
+    border: 2px solid var(--border);
+    cursor: pointer;
+    transition: transform 0.2s;
+  }
+  .report-photo:hover { transform: scale(1.05); }
+
+  /* Export button */
+  .btn-export {
+    padding: 10px 20px;
+    background: var(--success);
+    border: none;
+    border-radius: 10px;
+    color: white;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-export:hover { opacity: 0.85; }
+
+  /* Empty state */
+  .empty {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text2);
+  }
+  .empty .e-icon { font-size: 3.5rem; margin-bottom: 14px; opacity: 0.5; }
+
+  /* Lightbox */
+  .lightbox {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.92);
+    z-index: 999;
+    align-items: center;
+    justify-content: center;
+  }
+  .lightbox.open { display: flex; }
+  .lightbox img { max-width: 90vw; max-height: 90vh; border-radius: 12px; }
+  .lightbox-close {
+    position: absolute;
+    top: 20px; right: 24px;
+    font-size: 2rem;
+    cursor: pointer;
+    color: white;
+    background: none;
+    border: none;
+    line-height: 1;
+  }
+
+  @media (max-width: 600px) {
+    .form-row { grid-template-columns: 1fr; }
+    .stock-grid { grid-template-columns: 1fr 1fr; }
+    .stats-row { grid-template-columns: 1fr 1fr; }
+    .report-body-grid { grid-template-columns: 1fr; }
+    nav { padding: 0 12px; }
+    .nav-logo { font-size: 1rem; }
+    .page { padding: 20px 14px; }
+    .promoter-grid { grid-template-columns: repeat(3, 1fr); }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">PromoTrack</div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="showPage('promoter')">Registrar</button>
+    <button class="nav-tab" onclick="showPage('dashboard')">Dashboard</button>
+  </div>
+  <div class="nav-user">
+    <div class="avatar" id="currentAvatar">?</div>
+    <span id="currentName">Elige promotor</span>
+  </div>
+</nav>
+
+<!-- ===== PAGE: PROMOTER FORM ===== -->
+<div class="page active" id="page-promoter">
+  <div class="section-title">Reporte de Hallazgos</div>
+  <div class="section-sub">Selecciona tu nombre y completa el formulario de la tienda visitada.</div>
+
+  <!-- Promoter select -->
+  <div class="promoter-grid" id="promoterGrid"></div>
+
+  <!-- FORM -->
+  <form id="reportForm" style="display:none">
+
+    <!-- Tienda -->
+    <div class="form-card">
+      <h3>📍 Información de Visita</h3>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Tienda / Sucursal</label>
+          <input type="text" id="f_tienda" placeholder="Nombre de la tienda" required>
+        </div>
+        <div class="form-group">
+          <label>Cadena / Formato</label>
+          <select id="f_cadena">
+            <option value="">Seleccionar...</option>
+            <option>Falabella</option>
+            <option>Sodimac</option>
+            <option>Ripley</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Fecha de visita</label>
+          <input type="date" id="f_fecha" required>
+        </div>
+        <div class="form-group">
+          <label>Hora de visita</label>
+          <input type="time" id="f_hora">
+        </div>
+      </div>
+    </div>
+
+    <!-- Stock -->
+    <div class="form-card">
+      <h3>📦 Stock en Tienda</h3>
+      <div class="stock-grid">
+        <div class="stock-item">
+          <label>Unidades en Góndola</label>
+          <input type="number" id="f_stock_gondola" min="0" value="0">
+        </div>
+        <div class="stock-item">
+          <label>Unidades en Bodega</label>
+          <input type="number" id="f_stock_bodega" min="0" value="0">
+        </div>
+        <div class="stock-item">
+          <label>Unidades Quiebre</label>
+          <input type="number" id="f_stock_quiebre" min="0" value="0">
+        </div>
+      </div>
+    </div>
+
+    <!-- Estado exhibición -->
+    <div class="form-card">
+      <h3>🏪 Estado de Exhibición</h3>
+      <div class="form-group">
+        <label>Estado general</label>
+        <div class="tag-row" id="tagRow">
+          <button type="button" class="tag" data-val="Correcto" onclick="selectTag(this,'verde')">✅ Correcto</button>
+          <button type="button" class="tag" data-val="Falta material POP" onclick="selectTag(this,'amarillo')">⚠️ Falta material POP</button>
+          <button type="button" class="tag" data-val="Góndola desordenada" onclick="selectTag(this,'amarillo')">⚠️ Góndola desordenada</button>
+          <button type="button" class="tag" data-val="Quiebre de stock" onclick="selectTag(this,'rojo')">🔴 Quiebre de stock</button>
+          <button type="button" class="tag" data-val="Producto caducado" onclick="selectTag(this,'rojo')">🔴 Producto caducado</button>
+          <button type="button" class="tag" data-val="Precio incorrecto" onclick="selectTag(this,'rojo')">🔴 Precio incorrecto</button>
+          <button type="button" class="tag" data-val="Competencia agresiva" onclick="selectTag(this,'amarillo')">⚠️ Competencia agresiva</button>
+        </div>
+      </div>
+      <div class="form-group" style="margin-top:16px; margin-bottom:0">
+        <label>Comentarios y observaciones</label>
+        <textarea id="f_comentarios" placeholder="Describe lo que encontraste en la tienda, acciones tomadas, situaciones especiales..."></textarea>
+      </div>
+    </div>
+
+    <!-- Fotos -->
+    <div class="form-card">
+      <h3>📷 Evidencia Fotográfica</h3>
+      <div class="photo-zone" id="photoZone">
+        <input type="file" id="f_fotos" accept="image/*" multiple onchange="previewPhotos(event)">
+        <div class="icon">📸</div>
+        <p>Toca para agregar fotos <span>(máx. 5)</span></p>
+        <p style="font-size:0.78rem; margin-top:6px; color: var(--text3)">JPG, PNG • Selecciona varias a la vez</p>
+      </div>
+      <div class="photo-counter" id="photoCounter" style="display:none">
+        <span class="photo-counter-label" id="photoCountLabel">0 / 5 fotos</span>
+        <div class="photo-slots" id="photoSlots">
+          <div class="photo-slot" id="slot-0"></div>
+          <div class="photo-slot" id="slot-1"></div>
+          <div class="photo-slot" id="slot-2"></div>
+          <div class="photo-slot" id="slot-3"></div>
+          <div class="photo-slot" id="slot-4"></div>
+        </div>
+      </div>
+      <div class="photos-preview" id="photosPreview"></div>
+    </div>
+
+    <button type="submit" class="btn-submit">✅ Enviar Reporte</button>
+  </form>
+</div>
+
+<!-- ===== PAGE: DASHBOARD ===== -->
+<div class="page" id="page-dashboard">
+  <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px; flex-wrap:wrap; gap:10px">
+    <div class="section-title" style="margin:0">Dashboard del Supervisor</div>
+    <button class="btn-export" onclick="exportCSV()">📥 Exportar CSV</button>
+  </div>
+  <div class="section-sub">Revisa todos los reportes enviados por tu equipo.</div>
+
+  <!-- Stats -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="s-num" id="s-total">0</div>
+      <div class="s-label">Reportes totales</div>
+    </div>
+    <div class="stat-card">
+      <div class="s-num" id="s-hoy">0</div>
+      <div class="s-label">Hoy</div>
+    </div>
+    <div class="stat-card">
+      <div class="s-num" id="s-alertas" style="background: linear-gradient(135deg,#ef4444,#f59e0b); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;">0</div>
+      <div class="s-label">Con alertas</div>
+    </div>
+    <div class="stat-card">
+      <div class="s-num" id="s-fotos">0</div>
+      <div class="s-label">Fotos subidas</div>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="filter-bar">
+    <button class="filter-btn active" onclick="setFilter(this,'all')">Todos</button>
+    <button class="filter-btn" onclick="setFilter(this,'today')">Hoy</button>
+    <button class="filter-btn" onclick="setFilter(this,'alert')">⚠️ Alertas</button>
+    <button class="filter-btn" onclick="setFilter(this,'ok')">✅ OK</button>
+  </div>
+
+  <div class="report-list" id="reportList">
+    <div class="empty">
+      <div class="e-icon">📋</div>
+      <p>Aún no hay reportes enviados.</p>
+    </div>
+  </div>
+</div>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+  <button class="lightbox-close" onclick="closeLightbox()">✕</button>
+  <img id="lightboxImg" src="" alt="">
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast">✅ Reporte enviado con éxito</div>
+
+</div>
+
+<script>
+// =====================
+// DATA & STATE
+// =====================
+const PROMOTORES = [
+  { id:1, name:"Camilo",   zone:"Promotor 1", color:"#3b82f6" },
+  { id:2, name:"Matías",   zone:"Promotor 2", color:"#8b5cf6" },
+  { id:3, name:"Fabián",   zone:"Promotor 3", color:"#ec4899" },
+  { id:4, name:"Fer",      zone:"Promotor 4", color:"#f59e0b" },
+  { id:5, name:"Rodrigo",  zone:"Promotor 5", color:"#10b981" },
+];
+
+let selectedPromoter = null;
+let selectedTagVal = "";
+let photoDataURLs = [];
+let reports = [];
+let currentFilter = "all";
+
+// Load from storage
+async function loadReports() {
+  try {
+    const r = await window.storage.get("promotrack_reports");
+    if (r && r.value) reports = JSON.parse(r.value);
+  } catch(e) { reports = []; }
+}
+
+async function saveReports() {
+  try {
+    await window.storage.set("promotrack_reports", JSON.stringify(reports));
+  } catch(e) {}
+}
+
+// =====================
+// INIT
+// =====================
+window.addEventListener('DOMContentLoaded', async () => {
+  await loadReports();
+  renderPromoterGrid();
+  setTodayDate();
+  renderDashboard();
+});
+
+function setTodayDate() {
+  const d = new Date();
+  const iso = d.toISOString().split('T')[0];
+  document.getElementById('f_fecha').value = iso;
+  const hh = String(d.getHours()).padStart(2,'0');
+  const mm = String(d.getMinutes()).padStart(2,'0');
+  document.getElementById('f_hora').value = `${hh}:${mm}`;
+}
+
+// =====================
+// PAGES
+// =====================
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  event.currentTarget.classList.add('active');
+  if (id === 'dashboard') renderDashboard();
+}
+
+// =====================
+// PROMOTER GRID
+// =====================
+function renderPromoterGrid() {
+  const grid = document.getElementById('promoterGrid');
+  grid.innerHTML = PROMOTORES.map(p => `
+    <div class="promoter-card" id="pc-${p.id}" onclick="selectPromoter(${p.id})">
+      <div class="p-avatar" style="background:${p.color}">${p.name.split(' ').map(w=>w[0]).join('')}</div>
+      <div class="p-name">${p.name}</div>
+      <div class="p-zone">${p.zone}</div>
+    </div>
+  `).join('');
+}
+
+function selectPromoter(id) {
+  selectedPromoter = PROMOTORES.find(p => p.id === id);
+  document.querySelectorAll('.promoter-card').forEach(c => c.classList.remove('selected'));
+  document.getElementById('pc-'+id).classList.add('selected');
+  document.getElementById('currentAvatar').textContent = selectedPromoter.name.split(' ').map(w=>w[0]).join('');
+  document.getElementById('currentAvatar').style.background = selectedPromoter.color;
+  document.getElementById('currentName').textContent = selectedPromoter.name;
+  document.getElementById('reportForm').style.display = 'block';
+  document.getElementById('reportForm').scrollIntoView({ behavior:'smooth', block:'start' });
+}
+
+// =====================
+// TAGS
+// =====================
+function selectTag(el, color) {
+  el.classList.toggle('sel-'+color);
+  // If it was already selected with this color, deselect (toggle removes it)
+  // Collect all selected tags
+  selectedTagVal = Array.from(document.querySelectorAll('.tag[class*="sel-"]'))
+    .map(t => t.dataset.val).join(' | ');
+}
+
+// =====================
+// PHOTOS
+// =====================
+const MAX_PHOTOS = 5;
+
+function previewPhotos(e) {
+  const files = Array.from(e.target.files);
+  const remaining = MAX_PHOTOS - photoDataURLs.length;
+  const toAdd = files.slice(0, remaining);
+
+  if (files.length > remaining) {
+    alert(`Solo puedes agregar ${remaining} foto(s) más. Máximo 5 por reporte.`);
+  }
+
+  toAdd.forEach(file => {
+    const reader = new FileReader();
+    reader.onload = ev => {
+      photoDataURLs.push(ev.target.result);
+      renderPhotoPreview();
+    };
+    reader.readAsDataURL(file);
+  });
+
+  // Reset input so same file can be re-selected
+  e.target.value = '';
+}
+
+function removePhoto(idx) {
+  photoDataURLs.splice(idx, 1);
+  renderPhotoPreview();
+}
+
+function renderPhotoPreview() {
+  const preview = document.getElementById('photosPreview');
+  const counter = document.getElementById('photoCounter');
+  const label = document.getElementById('photoCountLabel');
+  const zone = document.getElementById('photoZone');
+
+  preview.innerHTML = photoDataURLs.map((src, i) => `
+    <div class="photo-thumb-wrap">
+      <img src="${src}" class="photo-thumb" onclick="openLightbox('${src}')">
+      <div class="photo-remove" onclick="removePhoto(${i})">✕</div>
+    </div>
+  `).join('');
+
+  // Update counter
+  const count = photoDataURLs.length;
+  counter.style.display = count > 0 ? 'flex' : 'none';
+  label.textContent = `${count} / ${MAX_PHOTOS} foto${count !== 1 ? 's' : ''}`;
+
+  // Update slots
+  for (let i = 0; i < MAX_PHOTOS; i++) {
+    const slot = document.getElementById('slot-'+i);
+    slot.classList.toggle('filled', i < count);
+  }
+
+  // Disable zone if full
+  zone.classList.toggle('full', count >= MAX_PHOTOS);
+  const input = document.getElementById('f_fotos');
+  input.disabled = count >= MAX_PHOTOS;
+}
+
+// =====================
+// SUBMIT
+// =====================
+document.getElementById('reportForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  if (!selectedPromoter) { alert('Selecciona tu nombre primero'); return; }
+
+  const report = {
+    id: Date.now(),
+    promoter: selectedPromoter,
+    tienda: document.getElementById('f_tienda').value,
+    cadena: document.getElementById('f_cadena').value,
+    fecha: document.getElementById('f_fecha').value,
+    hora: document.getElementById('f_hora').value,
+    stock_gondola: parseInt(document.getElementById('f_stock_gondola').value)||0,
+    stock_bodega: parseInt(document.getElementById('f_stock_bodega').value)||0,
+    stock_quiebre: parseInt(document.getElementById('f_stock_quiebre').value)||0,
+    estado: selectedTagVal || "Sin estado",
+    comentarios: document.getElementById('f_comentarios').value,
+    fotos: [...photoDataURLs],
+    ts: new Date().toISOString()
+  };
+
+  reports.unshift(report);
+  await saveReports();
+
+  // Reset
+  this.reset();
+  setTodayDate();
+  photoDataURLs = [];
+  selectedTagVal = '';
+  document.querySelectorAll('.tag').forEach(t => t.className = 'tag');
+  renderPhotoPreview();
+  document.getElementById('photoCounter').style.display = 'none';
+
+  // Toast
+  const toast = document.getElementById('toast');
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 3000);
+});
+
+// =====================
+// DASHBOARD
+// =====================
+function renderDashboard() {
+  const today = new Date().toISOString().split('T')[0];
+  const hoy = reports.filter(r => r.fecha === today).length;
+  const alertas = reports.filter(r => r.estado && r.estado !== "Correcto" && r.estado !== "Sin estado").length;
+  const fotos = reports.reduce((acc, r) => acc + (r.fotos ? r.fotos.length : 0), 0);
+
+  document.getElementById('s-total').textContent = reports.length;
+  document.getElementById('s-hoy').textContent = hoy;
+  document.getElementById('s-alertas').textContent = alertas;
+  document.getElementById('s-fotos').textContent = fotos;
+
+  let filtered = reports;
+  if (currentFilter === 'today') filtered = reports.filter(r => r.fecha === today);
+  else if (currentFilter === 'alert') filtered = reports.filter(r => r.estado && r.estado !== "Correcto" && r.estado !== "Sin estado");
+  else if (currentFilter === 'ok') filtered = reports.filter(r => r.estado === "Correcto");
+
+  const list = document.getElementById('reportList');
+  if (filtered.length === 0) {
+    list.innerHTML = `<div class="empty"><div class="e-icon">📋</div><p>No hay reportes para mostrar.</p></div>`;
+    return;
+  }
+  list.innerHTML = filtered.map((r, i) => {
+    const isRed = r.estado && ["Quiebre de stock","Producto caducado","Precio incorrecto"].some(s => r.estado.includes(s));
+    const isWarn = r.estado && ["Falta material POP","Góndola desordenada","Competencia agresiva"].some(s => r.estado.includes(s));
+    const statusClass = !r.estado || r.estado === "Sin estado" ? "s-ok" : (isRed ? "s-bad" : (isWarn ? "s-warn" : "s-ok"));
+    const initials = r.promoter ? r.promoter.name.split(' ').map(w=>w[0]).join('') : '?';
+    const color = r.promoter ? r.promoter.color : "#3b82f6";
+    const fechaStr = r.fecha ? r.fecha.split('-').reverse().join('/') : '';
+    return `
+    <div class="report-card">
+      <div class="report-card-header" onclick="toggleReport(this)">
+        <div class="left">
+          <div class="report-avatar" style="background:${color}">${initials}</div>
+          <div class="report-info">
+            <div class="r-name">${r.promoter?.name || 'Promotor'} — ${r.tienda || 'Sin tienda'}</div>
+            <div class="r-meta">${r.cadena ? r.cadena+' • ' : ''}${fechaStr} ${r.hora||''} • ${r.fotos?.length||0} foto(s)</div>
+          </div>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; justify-content:flex-end">
+          ${(r.estado||'Sin estado').split(' | ').map(s => {
+            const rc = ["Quiebre de stock","Producto caducado","Precio incorrecto"].includes(s) ? "s-bad" : (["Falta material POP","Góndola desordenada","Competencia agresiva"].includes(s) ? "s-warn" : "s-ok");
+            return `<span class="report-status ${rc}">${s}</span>`;
+          }).join('')}
+          <span style="color:var(--text2); font-size:1.2rem">›</span>
+        </div>
+      </div>
+      <div class="report-card-body" id="body-${i}">
+        <div class="report-body-grid">
+          <div class="detail-block">
+            <label>Stock</label>
+            <div class="stock-display">
+              <div class="stock-pill">Góndola <span>${r.stock_gondola}</span></div>
+              <div class="stock-pill">Bodega <span>${r.stock_bodega}</span></div>
+              <div class="stock-pill">Quiebre <span>${r.stock_quiebre}</span></div>
+            </div>
+          </div>
+          <div class="detail-block">
+            <label>Comentarios</label>
+            <p>${r.comentarios || '<em style="color:var(--text3)">Sin comentarios</em>'}</p>
+          </div>
+        </div>
+        ${r.fotos && r.fotos.length > 0 ? `
+        <div class="detail-block" style="margin-top:16px">
+          <label>Fotos</label>
+          <div class="report-photos">
+            ${r.fotos.map(f => `<img src="${f}" class="report-photo" onclick="openLightbox('${f}')">`).join('')}
+          </div>
+        </div>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function toggleReport(header) {
+  const card = header.closest('.report-card');
+  const body = card.querySelector('.report-card-body');
+  body.classList.toggle('open');
+}
+
+function setFilter(btn, f) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  currentFilter = f;
+  renderDashboard();
+}
+
+// =====================
+// LIGHTBOX
+// =====================
+function openLightbox(src) {
+  document.getElementById('lightboxImg').src = src;
+  document.getElementById('lightbox').classList.add('open');
+  event.stopPropagation();
+}
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('open');
+}
+
+// =====================
+// EXPORT CSV
+// =====================
+function exportCSV() {
+  if (reports.length === 0) { alert('No hay reportes para exportar.'); return; }
+  const headers = ['Fecha','Hora','Promotor','Tienda','Cadena','Estado','Stock Góndola','Stock Bodega','Quiebre','Comentarios','Fotos'];
+  const rows = reports.map(r => [
+    r.fecha, r.hora, r.promoter?.name||'', r.tienda, r.cadena,
+    r.estado, r.stock_gondola, r.stock_bodega, r.stock_quiebre,
+    (r.comentarios||'').replace(/,/g,';').replace(/\n/g,' '),
+    r.fotos?.length||0
+  ]);
+  const csv = [headers, ...rows].map(r => r.join(',')).join('\n');
+  const blob = new Blob(['\uFEFF'+csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = `reportes_promotores_${new Date().toISOString().split('T')[0]}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+</script>
+</body>
+</html>
