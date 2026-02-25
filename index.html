@@ -208,6 +208,9 @@
 
   /* Stock fields */
   .stock-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+  @media (max-width: 480px) {
+    .stock-grid { grid-template-columns: 1fr 1fr; }
+  }
   .stock-item {
     background: var(--surface2);
     border: 1px solid var(--border);
@@ -528,13 +531,22 @@
 
   @media (max-width: 600px) {
     .form-row { grid-template-columns: 1fr; }
-    .stock-grid { grid-template-columns: 1fr 1fr; }
     .stats-row { grid-template-columns: 1fr 1fr; }
     .report-body-grid { grid-template-columns: 1fr; }
     nav { padding: 0 12px; }
     .nav-logo { font-size: 1rem; }
-    .page { padding: 20px 14px; }
-    .promoter-grid { grid-template-columns: repeat(3, 1fr); }
+    .page { padding: 16px 12px; }
+    .promoter-grid { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .promoter-card { padding: 12px 8px; }
+    .form-card { padding: 16px; }
+    .photos-preview { grid-template-columns: repeat(5, 1fr); gap: 6px; }
+    .nav-tabs { gap: 2px; }
+    .nav-tab { padding: 6px 10px; font-size: 0.78rem; }
+    .tag { padding: 5px 10px; font-size: 0.75rem; }
+    .stock-item input { font-size: 1.1rem; }
+    .report-card-header { padding: 12px 14px; }
+    .filter-bar { gap: 6px; }
+    .filter-btn { padding: 6px 12px; font-size: 0.78rem; }
   }
 </style>
 </head>
