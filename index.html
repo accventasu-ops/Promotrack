@@ -1,3 +1,5 @@
+
+https://script.google.com/macros/s/AKfycbyRZuiEqARIIBQqX7-PrcWlzKJzWMJAEC87T1E9RcQVcg9Gqs8tVsBFEpwDr020BPxu/exec
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -799,17 +801,30 @@ let reports = [];
 let currentFilter = "all";
 
 // Load from storage
+// === Cargar reportes desde Google Sheets (via Apps Script) ===
 async function loadReports() {
   try {
-    const r = await window.storage.get("promotrack_reports");
-    if (r && r.value) reports = JSON.parse(r.value);
-  } catch(e) { reports = []; }
-}
-
-async function saveReports() {
-  try {
-    await window.storage.set("promotrack_reports", JSON.stringify(reports));
-  } catch(e) {}
+    const res = await fetch(`${API_URL}?action=list`, { cache: 'no-store' });
+    const json = await res.json();
+    // json.data es un array de filas con las columnas de la Sheet
+    reports = Array.isArray(json.data) ? json.data.map(row => ({
+      fecha: row['Fecha'] || '',
+      hora: row['Hora'] || '',
+      promoter: { name: row['Promotor'] || '', color: '#3b82f6' }, // color genérico
+      tienda: row['Tienda'] || '',
+      cadena: row['Cadena'] || '',
+      estado: row['Estado'] || 'Sin estado',
+      stock_gondola: Number(row['StockGondola'] || 0),
+      stock_bodega: Number(row['StockBodega'] || 0),
+      stock_quiebre: Number(row['StockQuiebre'] || 0),
+      comentarios: row['Comentarios'] || '',
+      fotos: [], // v1: aún no subimos fotos
+      ts: row['Timestamp'] || ''
+    })) : [];
+  } catch (e) {
+    console.error('loadReports error', e);
+    reports = [];
+  }
 }
 
 // =====================
